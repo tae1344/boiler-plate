@@ -24,18 +24,20 @@ mongoose.connect(config.mongoURI, {
 app.get('/', (req, res) => res.send('hello~~'))
 
 
-// 회원가입을 위한 라우터
+// register 라우터
 app.post('/register', (req, res) => {
 
   // 회원 가입시 필요한 정보를 client에서 가져오면
   // 정보를 db에 넣어준다.
+  // save() -> mongoo db 메서드
   const user = new User(req.body)
-  user.save((err,) => {
+
+  user.save((err, userInfo) => {
     if (err) return res.json({ success: false, err })
     return res.status(200).json({
       success: true
     })
-  }) // save() -> mongoo db 메서드
+  })
 
 })
 
