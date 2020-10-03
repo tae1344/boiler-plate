@@ -6,6 +6,8 @@ const port = 5000;
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const config = require('./config/key');
+
+const { auth } = require('./middleware/auth');
 const { User } = require('./models/User');
 
 // bodyParser 옵션 주기
@@ -29,7 +31,7 @@ app.get('/', (req, res) => res.send('hello~~'))
 
 
 // register 라우터
-app.post('/register', (req, res) => {
+app.post('/api/users/register', (req, res) => {
 
   // 회원 가입시 필요한 정보를 client에서 가져오면
   // 정보를 db에 넣어준다.
@@ -46,7 +48,7 @@ app.post('/register', (req, res) => {
 })
 
 // Login 라우터
-app.post('/login', (req, res) => {
+app.post('/api/users/login', (req, res) => {
   // 요청된 이메일을 데이터베이스에서 찾는다.
   User.findOne({ email: req.body.email }, (err, user) => {
     if (!user) {
@@ -73,17 +75,28 @@ app.post('/login', (req, res) => {
 
 
       })
-
     })
+  })
+})
+
+// Authentication 라우터
+// auth --> 미들웨어이다.
+//role 0 -> 일반유저, role not 0 -> 관리자
+app.get('/api/users/auth', auth, (req, res) => {
+  // 여기까지 미들웨어를 통과해 왔다는 건 Authentication이 True라는 말이다.
+  res.status(200).json({
+    _id: req.user_id,
+    isAdmin: req.user.role === 0 ? false : true,
+    isAuth: true,
+    email: req.user.email,
+    name: req.user.name,
+    lastname: req.user.lastname,
+    role: req.user.role,
+    image: req.user.image
 
   })
-
-
-
-
-
-
-
 })
+
+
 
 app.listen(port, () => console.log(`Server on port ${port}!!`));
