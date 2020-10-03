@@ -97,6 +97,21 @@ app.get('/api/users/auth', auth, (req, res) => {
   })
 })
 
+// Logout 라우터
+app.get('/api/users/logout', auth, (req, res) => {
+  // findOneAndUpdate() -> 몽고DB 메서드
+  //  req.user._id -> 미들웨어에서 온 값
+  User.findOneAndUpdate(
+    { _id: req.user._id, },
+    { token: "" },
+    (err, user) => {
+      if (err) return res.json({ success: false, err });
+
+      return res.status(200).send({ success: true });
+    }
+  )
+})
+
 
 
 app.listen(port, () => console.log(`Server on port ${port}!!`));
