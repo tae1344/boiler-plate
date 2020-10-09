@@ -73,7 +73,7 @@ userSchema.methods.generateToken = function (cb) {
   // user._id + 'secretToken' = token
   // user._id.toHexString() --> plain object 자료형으로 바꿔줌?
   let token = jwt.sign(user._id.toHexString(), 'secretToken')
-  user.toekn = token
+  user.token = token
   user.save((err, user) => {
     if (err) return cb(err);
     cb(null, user)

@@ -1,8 +1,5 @@
-
 const express = require('express');
 const app = express();
-
-
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const config = require('./config/key');
@@ -29,9 +26,7 @@ mongoose.connect(config.mongoURI, {
 
 app.get('/', (req, res) => res.send('hello~~'))
 
-app.get('/api/hello', (req, res) => {
-  res.send('Hello World!')
-})
+app.get('/api/hello', (req, res) => { res.send('Hello World!') })
 
 // register 라우터
 app.post('/api/users/register', (req, res) => {
@@ -56,6 +51,7 @@ app.post('/api/users/login', (req, res) => {
   User.findOne({ email: req.body.email }, (err, user) => {
     if (!user) {
       return res.json({
+        loginSuccess: false,
         message: "제공된 이메일에 해당하는 유저가 없습니다."
       })
     }
@@ -88,7 +84,7 @@ app.post('/api/users/login', (req, res) => {
 app.get('/api/users/auth', auth, (req, res) => {
   // 여기까지 미들웨어를 통과해 왔다는 건 Authentication이 True라는 말이다.
   res.status(200).json({
-    _id: req.user_id,
+    _id: req.user._id,
     isAdmin: req.user.role === 0 ? false : true,
     isAuth: true,
     email: req.user.email,
@@ -104,15 +100,14 @@ app.get('/api/users/auth', auth, (req, res) => {
 app.get('/api/users/logout', auth, (req, res) => {
   // findOneAndUpdate() -> 몽고DB 메서드
   //  req.user._id -> 미들웨어에서 온 값
-  User.findOneAndUpdate(
-    { _id: req.user._id, },
-    { token: "" },
-    (err, user) => {
+  User.findOneAndUpdate({ _id: req.user._id },
+    { token: "" }
+    , (err, user) => {
       if (err) return res.json({ success: false, err });
-
-      return res.status(200).send({ success: true });
-    }
-  )
+      return res.status(200).send({
+        success: true
+      })
+    })
 })
 
 
