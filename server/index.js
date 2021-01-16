@@ -97,6 +97,8 @@ app.get('/api/users/auth', auth, (req, res) => {
 })
 
 // Logout 라우터
+// DB의 저장 된 token 값을 "" 제거해주면, auth 미들웨어를 통해 토큰값이 다르게 되면서
+// 자동적으로 로그인이 풀리게 되는 원리다.
 app.get('/api/users/logout', auth, (req, res) => {
   // findOneAndUpdate() -> 몽고DB 메서드
   //  req.user._id -> 미들웨어에서 온 값
